@@ -1,6 +1,6 @@
 # How I Used Claude
 
-I used Claude to help me build faster - scaffolding, test structure, debugging ideas, and documentation. But I reviewed everything, tested it myself in the browser, and made corrections where things weren't right before submitting.
+I used Claude to help me build faster - scaffolding, test structure, debugging ideas, and documentation. But I didn't just accept what it gave me. I reviewed every file, tested the app myself in the browser, caught real bugs, and made corrections before submitting. Beyond that, I analysed the data and the user experience myself - I noticed that raw GPS coordinates are meaningless to a fleet manager and suggested adding a mini map and reverse geocoding. I spotted that the event taxonomy had no collision or accident data and flagged it as a gap. I identified that pagination would be needed for production scale and asked for it to be added. I matched the app's branding to ZenduIT's actual website. These weren't suggestions from Claude - they came from me thinking about what a fleet manager actually needs, not just what the brief asked for.
 
 ---
 
