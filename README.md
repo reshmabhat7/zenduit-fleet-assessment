@@ -1,93 +1,55 @@
-# Trax — Stage 2: Practical Build Assessment
+# ZenduFleet - Fleet Workflow Screen
 
-## Context
+A workflow screen for fleet managers to monitor vehicles, inspect records, view locations on a map, and export data. Built on Angular 21 with standalone components and signals.
 
-Zenduit wants to create a workflow screen for fleet managers to monitor
-submissions, exceptions, or operational events. Users need to switch
-between list and map views, filter data, inspect records quickly,
-understand status, and export the right information. Support feedback
-suggests the current experience is functional but slow to reason about
-and prone to missed edge cases.
+---
 
-This repository is a small Angular app showing a list of fleet vehicles
-backed by a static JSON dataset (`public/dataset/`). It works — but it's
-rough on purpose. Treat it as the starting point, not the spec.
-
-## Your role
-
-Act as a **Product Developer / Engineer**, not a pure UI implementer.
-Start by defining the problem, clarifying assumptions, and proposing a
-bounded improvement you can safely ship. Then implement a working slice
-and own the validation of your solution.
-
-## Stack
-
-- Angular 21 (standalone components, signals)
-- Vitest for unit tests
-- Static dataset served from `public/dataset/` (vehicles, devices,
-  accounts, users, events, exports, permissions)
-
-## Run it
+## Setup & running
 
 ```bash
+nvm use 22        # Angular 21 requires Node ≥ 20.19
 npm install
-npm start    # http://localhost:4200
-npm test
-npm run build
+npm start         # http://localhost:4200
+npm test          # 26 unit tests (Vitest)
+npm run build     # production build → dist/
 ```
 
-## What we expect
+---
 
-1. **State assumptions.** Call out what you would clarify if this were a
-   real project — users, constraints, data shape, success criteria.
-2. **Write a short problem-framing note** before you build. One page is
-   plenty.
-3. **Implement a working slice** — a feature or improvement in this
-   stack (or one you've agreed with us). Scope it to what you can ship
-   with confidence.
-4. **Add automated tests** appropriate to the risk level of your change.
-   We are not looking for 100% coverage; we are looking for tests that
-   would catch the regressions you actually care about.
-5. **Self-QA.** Walk through happy paths, edge cases, and failure modes
-   yourself before handing it over.
-6. **Describe rollout risk and observability.** How would you know — in
-   production — that your change is doing what you expected?
-7. **Use Claude in your workflow** and write a short note about how you
-   used it.
+## What was built
 
-## Suggested deliverables
+### Features
+- **Search** - filter by plate, VIN, or make/model (live, case-insensitive)
+- **Status & make filters** - combinable dropdowns; count shows "X of Y vehicles"
+- **Clear filters button** - appears only when a filter is active; resets all filters in one click
+- **Pagination** - 20/50/100 per page; auto-resets on filter change; hidden in map view and when results fit one page
+- **Detail panel** - click any row or map marker to open a slide-in panel showing status, identifiers, last known location, and recent events; close via ✕ or backdrop click
+- **Mini map in detail panel** - regional-zoom Leaflet map centred on the vehicle's coordinates so fleet managers see geographic context immediately instead of raw coordinates
+- **Reverse geocoding** - converts GPS coordinates to a readable place name (e.g. "Grand Traverse County, Michigan, US") via Nominatim API; falls back gracefully to coordinates for water/ocean locations
+- **Map view** - Leaflet + OpenStreetMap; markers for all vehicles with GPS; tooltip on hover; click marker opens detail panel; info bar shows vehicles without GPS
+- **CSV export** - downloads the currently filtered set; cells correctly quoted; button disabled when no results
+- **ZenduIT branding** - nav bar colour matched to ZenduIT's brand blue
 
-- **1-page mini brief**: problem statement, assumptions, target user,
-  success metric, scope, trade-offs.
-- **Working code** with clear setup instructions.
-- **Automated tests** plus instructions for running them.
-- **Short README / PR-style summary** explaining decisions, known
-  limitations, and next steps.
-- **Self-QA checklist** listing edge cases and how you validated each.
-- **"How I used Claude" note** (5–10 bullets): what it helped with, what
-  you verified manually, and at least one thing you rejected or
-  corrected.
+### Key decisions
+- **Angular signals + `computed()`** for all filter state - reactive, zero boilerplate, no NgRx needed at this scale
+- **Pagination via `effect()`** - uses Angular's `effect()` to auto-reset to page 1 when filters change; pagination only renders when there is more than one page
+- **Nominatim via Angular proxy** - reverse geocoding routed through `proxy.conf.json` so browser extensions cannot intercept the request; for production, swap to a paid geocoding provider
+- **Leaflet marker icon fix** - Angular's asset pipeline mangles Leaflet's default PNG paths; resolved by pointing to the versioned unpkg CDN
+- **`firstValueFrom` in tests** - Angular 21's stricter types reject the old Jasmine `done` callback pattern; converted to `async/await + firstValueFrom`
 
-## Submission
+### Known limitations
+- No URL-based filter state - can't deep-link to a filtered view
+- No debounce on search - acceptable for in-memory filtering; required for server-side search
+- No column sorting - filtering covers the same need for this scope
+- Map tiles and reverse geocoding require network access
+- Event taxonomy has no collision/accident event types - identified as a gap, documented as a future requirement
+- Event timestamps in the static dataset do not always align with vehicle last-seen dates - dataset generation issue, not a code bug
 
-- Code repository (branch / fork) **or** a zipped project.
-- Build, lint, and test instructions.
-- A short demo video or screen recording walking us through your
-  change.
-- Problem-framing note and self-QA checklist.
-- AI workflow note.
-
-## How we evaluate
-
-- **Problem framing** — did you understand and bound the problem before
-  coding?
-- **Judgment** — what you chose to fix, what you chose to defer, and
-  what you flagged.
-- **Trade-offs** — clarity about the cost of the path you took versus
-  the alternatives.
-- **Code & test discipline** — naming, scope, commit hygiene, what's
-  worth a test and what isn't.
-- **Ownership** — evidence that you validated your own work and thought
-  about how it behaves in production.
-- **AI use** — thoughtful collaboration with Claude, not blind
-  acceptance.
+### Next steps
+1. Add column sorting (click table header)
+2. Persist filter state in URL query params for deep-linking
+3. Add collision/accident event types with automatic status change to `in_maintenance`
+4. Wire up real-time event updates via WebSocket or SSE
+5. Replace Nominatim with a paid geocoding provider for production SLA
+6. Mobile-responsive layout
+7. **Summary dashboard** - the dataset already has everything needed: total vehicles by status, safety events over time (speeding, harsh braking), vehicles without recent GPS pings, and geofence activity. A dashboard view would give fleet managers an at-a-glance overview before they drill into the list
