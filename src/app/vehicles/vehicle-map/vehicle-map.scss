@@ -1,0 +1,27 @@
+.map-wrapper {
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.map-info-bar {
+  padding: 6px 12px;
+  font-size: 0.8rem;
+  color: #6b7280;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-bottom: none;
+  border-radius: 6px 6px 0 0;
+
+  &__unplaced {
+    color: #9ca3af;
+  }
+}
+
+.map-container {
+  flex: 1;
+  min-height: 500px;
+  border: 1px solid #e5e7eb;
+  border-radius: 0 0 6px 6px;
+}

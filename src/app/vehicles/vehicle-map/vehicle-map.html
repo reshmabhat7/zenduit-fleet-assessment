@@ -1,0 +1,9 @@
+<div class="map-wrapper">
+  <div class="map-info-bar">
+    <span>{{ placedCount() }} vehicles on map</span>
+    @if (unplacedCount() > 0) {
+      <span class="map-info-bar__unplaced">· {{ unplacedCount() }} without GPS</span>
+    }
+  </div>
+  <div #mapContainer class="map-container" aria-label="Fleet map"></div>
+</div>
