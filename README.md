@@ -6,6 +6,12 @@ A workflow screen for fleet managers to monitor vehicles, inspect records, view 
 
 ## Setup & running
 
+**Quick setup — run this once after cloning:**
+```bash
+./setup.sh
+```
+
+Or manually:
 ```bash
 nvm use 22        # Angular 21 requires Node ≥ 20.19
 npm install
