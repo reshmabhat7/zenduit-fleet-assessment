@@ -6,7 +6,7 @@ A workflow screen for fleet managers to monitor vehicles, inspect records, view 
 
 ## Setup & running
 
-**Quick setup — run this once after cloning:**
+**Quick setup - run this once after cloning:**
 ```bash
 ./setup.sh
 ```
