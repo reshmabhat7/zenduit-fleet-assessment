@@ -3,3 +3,48 @@
   min-height: 100dvh;
   background: #f3f4f6;
 }
+
+.app-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  height: 56px;
+  background: #0057b8;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+
+  &__brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  &__logo {
+    font-size: 1.4rem;
+    color: #ffffff;
+    line-height: 1;
+  }
+
+  &__name {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 0.02em;
+  }
+
+  &__tag {
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.7);
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+}
+
+.app-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px;
+}
