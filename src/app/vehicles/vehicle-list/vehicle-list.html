@@ -1,7 +1,45 @@
 <section class="vehicle-list">
   <header class="vehicle-list__header">
-    <h1>Fleet Vehicles</h1>
-    <p class="vehicle-list__count">{{ getFilteredVehicles().length }} of {{ vehicles().length }} vehicles</p>
+    <div class="vehicle-list__title-row">
+      <h1>Fleet Vehicles</h1>
+      <div class="vehicle-list__actions">
+        <button
+          class="btn btn--secondary"
+          (click)="exportCsv()"
+          [disabled]="filteredVehicles().length === 0"
+          title="Export current view as CSV"
+        >
+          Export CSV
+        </button>
+        <div class="view-toggle" role="group" aria-label="View mode">
+          <button
+            class="view-toggle__btn"
+            [class.view-toggle__btn--active]="viewMode() === 'list'"
+            (click)="setView('list')"
+            aria-pressed="{{ viewMode() === 'list' }}"
+          >
+            List
+          </button>
+          <button
+            class="view-toggle__btn"
+            [class.view-toggle__btn--active]="viewMode() === 'map'"
+            (click)="setView('map')"
+            aria-pressed="{{ viewMode() === 'map' }}"
+          >
+            Map
+          </button>
+        </div>
+      </div>
+    </div>
+
+    @if (viewMode() === 'list') {
+      <p class="vehicle-list__count">
+        {{ filteredVehicles().length }} of {{ vehicles().length }} vehicles
+        @if (filteredVehicles().length > pageSize()) {
+          · page {{ currentPage() }} of {{ totalPages() }}
+        }
+      </p>
+    }
   </header>
 
   <div class="vehicle-list__filters">
@@ -9,7 +47,7 @@
       <span>Search</span>
       <input
         type="text"
-        placeholder="Search by plate"
+        placeholder="Plate, VIN or make / model…"
         [ngModel]="query()"
         (ngModelChange)="query.set($event)"
       />
@@ -17,41 +55,97 @@
 
     <label class="filter">
       <span>Status</span>
-      <select
-        [ngModel]="selectedStatus()"
-        (ngModelChange)="selectedStatus.set($event)"
-      >
+      <select [ngModel]="selectedStatus()" (ngModelChange)="selectedStatus.set($event)">
         @for (status of statuses; track status) {
-          <option [value]="status">{{ status }}</option>
+          <option [value]="status">
+            {{ status === 'all' ? 'All statuses' : labelForStatus($any(status)) }}
+          </option>
         }
       </select>
     </label>
+
+    <label class="filter">
+      <span>Make</span>
+      <select [ngModel]="selectedMake()" (ngModelChange)="selectedMake.set($event)">
+        @for (make of makes(); track make) {
+          <option [value]="make">{{ make === 'all' ? 'All makes' : make }}</option>
+        }
+      </select>
+    </label>
+
+    @if (hasActiveFilters) {
+      <button class="btn btn--clear" (click)="clearFilters()">✕ Clear filters</button>
+    }
   </div>
 
-  <table class="vehicle-list__table">
-    <thead>
-      <tr>
-        <th>Plate</th>
-        <th>Vehicle</th>
-        <th>Year</th>
-        <th>Status</th>
-        <th>Account</th>
-        <th>Last seen</th>
-      </tr>
-    </thead>
-    <tbody>
-      @for (vehicle of getFilteredVehicles(); track vehicle.id) {
+  @if (loading()) {
+    <p class="vehicle-list__state">Loading vehicles…</p>
+  } @else if (filteredVehicles().length === 0) {
+    <p class="vehicle-list__state">No vehicles match the current filters.</p>
+  } @else if (viewMode() === 'map') {
+    <div class="vehicle-list__map-container">
+      <app-vehicle-map
+        [vehicles]="filteredVehicles()"
+        (vehicleSelected)="selectVehicle($event)"
+      />
+    </div>
+  } @else {
+    <table class="vehicle-list__table">
+      <thead>
         <tr>
-          <td>{{ vehicle.plate }}</td>
-          <td>{{ vehicle.make }} {{ vehicle.model }}</td>
-          <td>{{ vehicle.year }}</td>
-          <td>
-            <span class="status status--{{ vehicle.status }}">{{ vehicle.status }}</span>
-          </td>
-          <td>{{ vehicle.account_id }}</td>
-          <td>{{ vehicle.last_known_location?.recorded_at }}</td>
+          <th>Plate</th>
+          <th>Vehicle</th>
+          <th>Year</th>
+          <th>Status</th>
+          <th>Account</th>
+          <th>Last seen</th>
         </tr>
-      }
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        @for (vehicle of pagedVehicles(); track vehicle.id) {
+          <tr class="vehicle-row" (click)="selectVehicle(vehicle)" tabindex="0"
+              (keydown.enter)="selectVehicle(vehicle)">
+            <td class="vehicle-row__plate">{{ vehicle.plate }}</td>
+            <td>{{ vehicle.make }} {{ vehicle.model }}</td>
+            <td>{{ vehicle.year }}</td>
+            <td>
+              <span class="status status--{{ vehicle.status }}">
+                {{ labelForStatus(vehicle.status) }}
+              </span>
+            </td>
+            <td class="vehicle-row__account">{{ vehicle.account_id }}</td>
+            <td class="vehicle-row__lastseen">
+              {{ vehicle.last_known_location?.recorded_at | relativeTime }}
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+
+  @if (totalPages() > 1 && viewMode() === 'list') {
+    <div class="pagination">
+      <span class="pagination__info">
+        Showing {{ pageStart() }}–{{ pageEnd() }} of {{ filteredVehicles().length }} vehicles
+      </span>
+      <div class="pagination__controls">
+        <button class="pagination__btn" (click)="prevPage()" [disabled]="currentPage() === 1">← Prev</button>
+        <span class="pagination__pages">Page {{ currentPage() }} of {{ totalPages() }}</span>
+        <button class="pagination__btn" (click)="nextPage()" [disabled]="currentPage() === totalPages()">Next →</button>
+      </div>
+      <select class="pagination__size" [ngModel]="pageSize()" (ngModelChange)="setPageSize($event)">
+        @for (size of pageSizeOptions; track size) {
+          <option [value]="size">{{ size }} per page</option>
+        }
+      </select>
+    </div>
+  }
 </section>
+
+@if (selectedVehicle()) {
+  <app-vehicle-detail
+    [vehicle]="selectedVehicle()!"
+    [events]="events()"
+    (close)="closeDetail()"
+  />
+}
