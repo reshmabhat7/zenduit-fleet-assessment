@@ -6,7 +6,7 @@ export type EventType =
   | 'ignition_on'
   | 'ignition_off'
   | 'speeding'
-  | 'geofence_entry'
+  | 'geofence_enter'
   | 'geofence_exit';
 
 export type ViewMode = 'list' | 'map';

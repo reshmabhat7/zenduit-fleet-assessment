@@ -1,6 +1,7 @@
 import { Component, input, output, computed, signal, AfterViewInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { Vehicle, FleetEvent, STATUS_LABELS } from '../vehicle.model';
 import { RelativeTimePipe } from '../../core/pipes/relative-time.pipe';
+import { parseTimestamp } from '../../core/parse-timestamp';
 import * as L from 'leaflet';
 
 @Component({
@@ -26,6 +27,11 @@ export class VehicleDetail implements AfterViewInit, OnDestroy {
   readonly recentEvents = computed(() =>
     this.events()
       .filter((e) => e.vehicle_id === this.vehicle().id)
+      .sort(
+        (a, b) =>
+          (parseTimestamp(b.timestamp)?.getTime() ?? 0) -
+          (parseTimestamp(a.timestamp)?.getTime() ?? 0),
+      )
       .slice(0, 10),
   );
 

@@ -13,10 +13,12 @@ npm test          # 26 unit tests
 
 ## Automated tests (26 passing)
 
-| Test file | What it guards |
-|---|---|
-| `vehicle.service.spec.ts` | Service instantiates; plate whitespace trimmed; events endpoint hit |
-| `vehicle-list.spec.ts` | Component creates; vehicles load; all filter combinations; makes dropdown; view toggle; detail panel open/close |
+| Test file | Count | What it guards |
+|---|---|---|
+| `vehicle.service.spec.ts` | 3 | Service instantiates; plate whitespace trimmed; events endpoint hit |
+| `vehicle-list.spec.ts` | 15 | Component creates; vehicles load; all filter combinations; makes dropdown; view toggle; detail panel open/close |
+| `relative-time.pipe.spec.ts` | 7 | Null/invalid handling; minute/hour/day buckets; timezone offsets |
+| `app.spec.ts` | 1 | Root component bootstraps |
 
 ---
 
@@ -96,6 +98,7 @@ npm test          # 26 unit tests
 
 ---
 
-## Known data quality issue
+## Known data quality issues
 
-Event timestamps in the static dataset do not always align with vehicle last-seen dates. This is a dataset generation issue - not a code bug. In production, events are generated live by the GPS device and would always be chronologically consistent with vehicle location data.
+- **Timestamps don't always align.** Event timestamps in the static dataset do not always line up with vehicle last-seen dates. This is a dataset generation issue, not a code bug - in production, events are generated live by the GPS device and would be chronologically consistent with location data.
+- **One event carries a raw Unix-epoch timestamp** (`"1775084201"`) instead of ISO 8601. Rather than render "Invalid date", the `relativeTime` pipe now normalises epoch values (seconds or milliseconds) back to a real date, and the detail panel sorts events by parsed timestamp so the malformed one doesn't jump the order.

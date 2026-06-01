@@ -1,12 +1,13 @@
 import { Pipe, PipeTransform } from '@angular/core';
+import { parseTimestamp } from '../parse-timestamp';
 
 @Pipe({ name: 'relativeTime', standalone: true, pure: true })
 export class RelativeTimePipe implements PipeTransform {
-  transform(value: string | null | undefined): string {
-    if (!value) return 'No location';
+  transform(value: string | number | null | undefined): string {
+    if (value === null || value === undefined || value === '') return '—';
 
-    const date = new Date(value);
-    if (isNaN(date.getTime())) return 'Invalid date';
+    const date = parseTimestamp(value);
+    if (!date) return 'Invalid date';
 
     const diffMs = Date.now() - date.getTime();
     const diffMin = Math.floor(diffMs / 60_000);

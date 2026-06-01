@@ -13,7 +13,7 @@ Fleet managers and operations managers who check on their vehicles every day. Th
 | Assumption | Would clarify in a real project |
 |---|---|
 | Dataset is read-only | Confirm if inline status edits or event acknowledgement are needed |
-| Events map to existing types (harsh_brake, speeding, etc.) | Validate event taxonomy - are critical types missing? |
+| Events map to the types present in the data (gps_ping, harsh_brake, ignition, geofence_enter/exit) | Validate event taxonomy - are critical types like collision missing? |
 | Export is user-triggered, not scheduled | Confirm if scheduled email reports are needed |
 | Map is informational, not dispatch | Confirm if routing or assign-to-driver features are expected |
 | 500 vehicles is a starting size | Production fleets may need virtual scroll or server-side pagination |
@@ -41,4 +41,4 @@ A fleet manager can find all vehicles in `in_maintenance`, inspect the last know
 
 ## Gap Identified
 
-While reviewing the events section I noticed something missing. The data tells you a driver braked hard or was speeding - but it doesn't tell you if there was an actual accident. A `harsh_brake` could be nothing, or it could be a collision. The system can't tell. A real product would need events like `collision_detected` or `airbag_deployed`, and the vehicle status should automatically flip to `in_maintenance` if a crash is confirmed. I've flagged this as a next step.
+While reviewing the events section I noticed something missing. The data tells you a driver braked hard - but it doesn't tell you if there was an actual accident. A `harsh_brake` could be nothing, or it could be a collision. The system can't tell. A real product would need events like `collision_detected` or `airbag_deployed`, and the vehicle status should automatically flip to `in_maintenance` if a crash is confirmed. I've flagged this as a next step.

@@ -88,7 +88,7 @@ export class VehicleList implements OnInit {
     effect(() => {
       this.filteredVehicles();
       this.currentPage.set(1);
-    }, { allowSignalWrites: true });
+    });
   }
 
   ngOnInit(): void {

@@ -7,12 +7,12 @@ describe('RelativeTimePipe', () => {
     pipe = new RelativeTimePipe();
   });
 
-  it('returns "No location" for null', () => {
-    expect(pipe.transform(null)).toBe('No location');
+  it('returns a dash for null', () => {
+    expect(pipe.transform(null)).toBe('—');
   });
 
-  it('returns "No location" for undefined', () => {
-    expect(pipe.transform(undefined)).toBe('No location');
+  it('returns a dash for undefined', () => {
+    expect(pipe.transform(undefined)).toBe('—');
   });
 
   it('returns "Invalid date" for garbage input', () => {
