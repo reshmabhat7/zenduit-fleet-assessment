@@ -1,0 +1,67 @@
+<div class="detail-backdrop" (click)="onBackdropClick($event)">
+  <aside class="detail-panel">
+    <header class="detail-panel__header">
+      <div>
+        <h2 class="detail-panel__title">{{ vehicle().plate }}</h2>
+        <p class="detail-panel__subtitle">{{ vehicle().make }} {{ vehicle().model }} · {{ vehicle().year }}</p>
+      </div>
+      <button class="detail-panel__close" (click)="onClose()" aria-label="Close">✕</button>
+    </header>
+
+    <div class="detail-panel__body">
+      <section class="detail-section">
+        <h3 class="detail-section__heading">Status</h3>
+        <span class="status status--{{ vehicle().status }}">{{ statusLabel() }}</span>
+      </section>
+
+      <section class="detail-section">
+        <h3 class="detail-section__heading">Identifiers</h3>
+        <dl class="detail-list">
+          <dt>VIN</dt><dd>{{ vehicle().vin }}</dd>
+          <dt>Vehicle ID</dt><dd>{{ vehicle().id }}</dd>
+          <dt>Device</dt><dd>{{ vehicle().device_id }}</dd>
+          <dt>Account</dt><dd>{{ vehicle().account_id }}</dd>
+        </dl>
+      </section>
+
+      <section class="detail-section">
+        <h3 class="detail-section__heading">Last Known Location</h3>
+        @if (hasLocation()) {
+          <dl class="detail-list">
+            <dt>Recorded</dt>
+            <dd>{{ vehicle().last_known_location!.recorded_at | relativeTime }}</dd>
+            <dt>Location</dt>
+            <dd>
+              @if (locationLoading()) {
+                <span class="location-loading">Looking up address…</span>
+              } @else if (locationName()) {
+                {{ locationName() }}
+              } @else {
+                {{ vehicle().last_known_location!.lat }}, {{ vehicle().last_known_location!.lng }}
+              }
+            </dd>
+          </dl>
+          <div #miniMapContainer class="mini-map-container"></div>
+        } @else {
+          <p class="detail-panel__empty">No location data available.</p>
+        }
+      </section>
+
+      <section class="detail-section">
+        <h3 class="detail-section__heading">Recent Events</h3>
+        @if (recentEvents().length > 0) {
+          <ul class="event-list">
+            @for (event of recentEvents(); track event.id) {
+              <li class="event-list__item">
+                <span class="event-list__type event-list__type--{{ event.type }}">{{ event.type }}</span>
+                <span class="event-list__time">{{ event.timestamp | relativeTime }}</span>
+              </li>
+            }
+          </ul>
+        } @else {
+          <p class="detail-panel__empty">No recent events.</p>
+        }
+      </section>
+    </div>
+  </aside>
+</div>
