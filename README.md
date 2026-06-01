@@ -59,3 +59,4 @@ npm run build     # production build → dist/
 5. Replace Nominatim with a paid geocoding provider for production SLA
 6. Mobile-responsive layout
 7. **Summary dashboard** - the dataset already has everything needed: total vehicles by status, safety events over time (speeding, harsh braking), vehicles without recent GPS pings, and geofence activity. A dashboard view would give fleet managers an at-a-glance overview before they drill into the list
+8. **Login and authentication** - in production, fleet data is sensitive. Role-based access would ensure fleet managers only see their own accounts, and admins can see everything

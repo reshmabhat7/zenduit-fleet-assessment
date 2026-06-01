@@ -27,7 +27,7 @@ A fleet manager can find all vehicles in `in_maintenance`, inspect the last know
 
 **In:** Search by plate/VIN/make, status + make filter dropdowns, clear filters button, pagination (20/50/100 per page), detail panel with mini map + reverse geocoding + recent events, list/map view toggle, CSV export, ZenduIT branding
 
-**Out (deferred):** Column sorting, real-time updates, write-back, mobile layout, collision event types, URL-based filter state, summary dashboard
+**Out (deferred):** Column sorting, real-time updates, write-back, mobile layout, collision event types, URL-based filter state, summary dashboard, login and authentication
 
 ## Trade-offs
 
